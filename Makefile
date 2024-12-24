@@ -6,18 +6,18 @@
 #    By: tkondo <tkondo@student.42tokyo.jp>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/05/09 00:35:59 by tkondo            #+#    #+#              #
-#    Updated: 2024/12/22 16:14:45 by tkondo           ###   ########.fr        #
+#    Updated: 2024/12/23 20:26:42 by tkondo           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 CC = cc
 INCLUDE_DIR = -Iinclude -I$$HOME/include
-CFLAGS = -c -fPIE -Wall -Wextra -Werror
+CFLAGS = -c -fPIE -Wall -Wextra -Werror -static-libsan
 
 SRC_DIR = src
 OBJ_DIR = bin
-LIB_DIR = -L$$HOME/lib
-LIBS = -lm -lmlx_Linux -lmlx -lXext -lX11
+LIB_DIR = -L$$HOME/lib -Llib
+LIBS = -lm -lmlx_Linux -lmlx -lXext -lX11 -lft
 NAME = fdf 
 TARGET =\
 	main
