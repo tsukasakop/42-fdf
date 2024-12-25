@@ -6,7 +6,7 @@
 #    By: tkondo <tkondo@student.42tokyo.jp>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/05/09 00:35:59 by tkondo            #+#    #+#              #
-#    Updated: 2024/12/23 20:26:42 by tkondo           ###   ########.fr        #
+#    Updated: 2024/12/25 18:28:50 by tkondo           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,6 +19,8 @@ OBJ_DIR = bin
 LIB_DIR = -L$$HOME/lib -Llib
 LIBS = -lm -lmlx_Linux -lmlx -lXext -lX11 -lft
 NAME = fdf 
+CANVAS_W = $(shell expr $$(xdpyinfo | awk '/dimensions/{print $$2}' | awk -Fx '{print $$1}') / 5 \* 2)
+CANVAS_H = $(shell expr $$(xdpyinfo | awk '/dimensions/{print $$2}' | awk -Fx '{print $$2}') / 5 \* 2)
 TARGET =\
 	main
 
@@ -34,7 +36,7 @@ $(NAME): $(OBJS)
 
 $(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
 	@mkdir -p $(OBJ_DIR)
-	$(CC) $(CFLAGS) $< -o $@ $(INCLUDE_DIR)
+	$(CC) $(CFLAGS) $< -o $@ $(INCLUDE_DIR) -D CANVAS_W=$(CANVAS_W) -D CANVAS_H=$(CANVAS_H)
 
 clean:
 	rm -f $(OBJS)

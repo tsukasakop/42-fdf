@@ -1,7 +1,12 @@
 #ifndef FDF_H
 #define FDF_H
+
+#ifndef CANVAS_W
 #define CANVAS_W 1920
+#endif
+#ifndef CANVAS_H
 #define CANVAS_H 1080
+#endif
 
 typedef uint64_t t_color;
 typedef struct s_model t_model;
@@ -22,6 +27,7 @@ struct  s_pixel
 {
 	int x;
 	int y;
+	uint64_t color;
 };
 
 struct s_point

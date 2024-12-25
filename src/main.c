@@ -1,6 +1,8 @@
 //usr/bin/cc $0 -Iinclude -L. -lm -lmlx_Linux -lmlx -lXext -lX11 -o a.out && ./a.out; exit;
 #include <mlx.h>
+
 #include <stdlib.h>
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -8,6 +10,8 @@
 #include "fdf.h"
 
 #include <math.h>
+
+#define PRINT(...) fprintf(stderr,__VA_ARGS__)
 /*
 
 
@@ -209,11 +213,21 @@ void	*draw_lines(t_pixel ***map)
 }
 */
 
-int	draw_pixel(t_image *i, int x, int y, uint64_t color)
+int	draw_pixel(t_image *i, t_pixel *p)
 {
-	int c;
-	c = x * i->lsize + y * (i->bpp / 8);
-	if (c < 0 || c >= CANVAS_H * (i->lsize + 1))
+	size_t c;
+	c = (size_t)p->y * i->lsize + (size_t)p->x * (i->bpp / 8);
+	if (c / i->bpp * 8 / CANVAS_W >= CANVAS_H )
+		return 0;
+	*(t_color *)(((char *)i->addr) + c) = p->color; 
+	return 1;
+}
+
+int	draw_p(t_image *i, int x, int y, uint64_t color)
+{
+	size_t c;
+	c = (size_t)y * i->lsize + (size_t)x * (i->bpp / 8);
+	if (c >= CANVAS_H * ((size_t)i->lsize + 1))
 		return 0;
 	*(t_color *)(((char *)i->addr) + c) = color; 
 	return 1;
@@ -232,15 +246,102 @@ int random_img(t_image *i)
 			for(int j = 0; j<100;j++)
 			{
 				if((j + k)%2)
-				draw_pixel(i, x+k, y+j, c); 
+				draw_p(i, x+k, y+j, c); 
 			}
 		}
 	}
 	return 1;
 }
 
+t_pixel *pixel_new(int x, int y, uint64_t color)
+{
+	t_pixel *px;
+	px = (t_pixel *)ft_g_mmmalloc(sizeof(t_pixel));
+	if(px == NULL)
+		return NULL;
+	px->x = x;
+	px->y = y;
+	px->color = color;
+	return px;
+}
+
+t_pixel *random_pixel()
+{
+	t_pixel *px;
+	px = pixel_new(random() % CANVAS_H, random() % CANVAS_W, random() % 0x100000000);
+	return px;
+}
+
+int draw_line_to_right(t_image *i, t_pixel *p0, t_pixel *p1)
+{
+	t_pixel *c;
+
+	PRINT("Drawing line down\n");
+	c = pixel_new(p0->x, p0->y, p0->color);
+	if(c == NULL)
+		return 0;
+	int dx;
+	int dy;
+	int e;
+	e=0;
+	dx = p1->x - p0->x;
+	dy = p1->y - p0->y;
+	while(c->x != p1->x)
+	{
+		PRINT("%dx%d\n", c->x, c->y);
+		if (!draw_pixel(i, c))
+			return 0;
+		e +=dy;
+		if(e > dx)
+		{
+			c->y++;
+			e-=dx;
+		}
+		c->x++;
+	}
+	free(c);
+	return 1;
+}
+
+int draw_line_to_up(t_image *i, t_pixel *p0, t_pixel *p1)
+{
+	(void)i;
+	(void)p0;
+	(void)p1;
+		PRINT("Drawing line up\n");
+	return 1;
+}
+
+int	draw_line(t_image *i, t_pixel *p0, t_pixel *p1)
+{
+	t_pixel *begin;
+	t_pixel *end;
+
+	if(p1->x - p0->x + p1->y - p0->y > 0)
+	{
+		begin = p0;
+		end = p1;
+	}
+	else
+	{
+		begin = p1;
+		end = p0;
+	}
+	if(end->x - begin->x > end->y - begin->y)
+		return draw_line_to_right(i, begin, end);
+	else
+		return draw_line_to_up(i, begin, end);
+}
+
+int draw_random_line(t_image *i)
+{
+	return draw_line(i, random_pixel(), random_pixel());
+}
+
 int main()
 {
+	PRINT("Start:\n");
+	PRINT(" - canvas(x: %d, y: %d)\n", CANVAS_W, CANVAS_H);
 	ft_set_global("mlx", mlx_init());
 	ft_set_global("win", mlx_new_window(ft_get_global("mlx"), CANVAS_W, CANVAS_H, "fdf"));
 /*
@@ -258,7 +359,13 @@ int main()
 	t_pixel px = {4, 4};
 	draw_pixel(&i, &px);
 */
-	random_img(&i);
+	//random_img(&i);
+	//draw_line(&i, pixel_new(0, 0, 0xffffffff), pixel_new(CANVAS_W-1, 300, 0xffffffff));
+	//draw_line(&i, pixel_new(0, 0, 0xffffffff), pixel_new(100, 10, 0xffffffff));
+int cnt=0;
+	while(cnt++ < 100)
+	draw_random_line(&i);
+//*/
 	mlx_put_image_to_window(ft_get_global("mlx"), ft_get_global("win"), i.img, 0, 0);
 /*
 	int cnt;
@@ -273,6 +380,6 @@ int main()
 	*/
 	//mlx_string_put(p, w, 250, 250, 0x888888, "string test");
 	mlx_loop(ft_get_global("mlx"));
-
 	return 1;
 }
+
