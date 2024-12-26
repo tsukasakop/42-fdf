@@ -166,9 +166,13 @@ t_pixel *random_pixel()
 t_pixel *point2pixel(t_point *p)
 {
 	t_pixel *px;
+	int f[3][2] = {
+		{10, -20, 0},
+		{20, 10, 60}
+	};
 	px =  pixel_new(
-			p->x * 2 + p->y * -2 + p->z * 0,
-			p->x * 1 + p->y * 1 + p->z * -2,
+			p->x * f[0][0] + p->y * f[0][1] + p->z * f[0][2],
+			p->x * f[1][0] + p->y * f[1][0] + p->z * f[1][2],
 			p->color);
 	return px;
 }
@@ -206,7 +210,7 @@ int draw_line(t_image *i, t_pixel *p0, t_pixel *p1)
 
 t_point *get_point(t_model *m, size_t x, size_t y)
 {
-	return &m->p[y][y];
+	return &m->p[y][x];
 }
 
 int draw_random_line(t_image *i)
@@ -262,7 +266,7 @@ void	draw_wire(t_image *i, t_2dmap map)
 	while (y < max_y)
 	{
 		x = 0;
-		while(x < max_y)
+		while(x < max_x)
 		{
 			//PRINT("x: %lu, y: %lu\n", x, y);
 			if (x < max_x - 1)
@@ -420,6 +424,8 @@ int main(int argc, char **argv)
 	//mlx = mlx_init();
 	mlx = NULL;
 	mdl = get_model(argv[1]);
+	if(mdl == NULL)
+		return 1;
 	img = model2image(mlx, mdl);
 	//win = mlx_new_window(mlx, CANVAS_W, CANVAS_H);
 	//mlx_put_image_to_window(mlx, win, img, 0, 0);
