@@ -12,8 +12,6 @@
 #include <math.h>
 
 #define PRINT(...) fprintf(stderr,__VA_ARGS__)
-/*
-
 
 t_model *read_model(const char* f)
 {
@@ -26,9 +24,9 @@ t_model *read_model(const char* f)
 		while(j < 10)
 		{
 			m->t_point[i][j].z = 0;
-			m->t_point[i][j].color = 0;
-			m->y_max = j;
-			m->x_max = i;
+			m->t_point[i][j].color = 0xffffffff;
+			//m->y_max = j;
+			//m->x_max = i;
 			j++;
 		}
 		i++;
@@ -137,33 +135,6 @@ t_pixel ***model2pixel(t_angle *a, t_model *m)
 	return map;
 }
 
-double	dist_point_to_line(t_pixel *cur, t_pixel *l1, t_pixel *l2)
-{
-	double a;
-	a = (double)l1->x - l2->x;
-	b = (double)l2->y - l1->y;
-	c = -a * l1->x + b * l1->y;
-	d = fabs(a * cur->x + b * cur->y + c) / sqrt(a * a + b * b);
-}
-
-int		next_line_pixel(t_pixel *cur, t_pixel *start, t_pixel *end)
-{
-	int xi;
-	if(start->x < end->x)
-		xi = 1;
-	else(start->x == end->x)
-		xi = 0;
-	else
-		xi = -1;
-	int yi;
-	if(start->y < end->y)
-		yi = 1;
-	else(start->y == end->y)
-		yi = 0;
-	else
-		yi = -1;
-}
-
 int		draw_pixel(t_image *i, t_pixel *px)
 {
 	int i;
@@ -217,8 +188,9 @@ int	draw_pixel(t_image *i, t_pixel *p)
 {
 	size_t c;
 	c = (size_t)p->y * i->lsize + (size_t)p->x * (i->bpp / 8);
-	if (c / i->bpp * 8 / CANVAS_W >= CANVAS_H )
+	if (c / i->bpp * 8 / CANVAS_W >= CANVAS_H)
 		return 0;
+	PRINT("Draw point(%d, %d)=%lu\n", p->x, p->y, c);
 	*(t_color *)(((char *)i->addr) + c) = p->color; 
 	return 1;
 }
@@ -338,27 +310,47 @@ int draw_random_line(t_image *i)
 	return draw_line(i, random_pixel(), random_pixel());
 }
 
+void	init_mlx()
+{
+	ft_set_global("mlx", mlx_init());
+	ft_set_global("win", mlx_new_window(ft_get_global("mlx"), CANVAS_W, CANVAS_H, "fdf"));
+}
+
+void	render_img(t_image *i)
+{
+	int cnt;
+	while(cnt++ < 1000000)
+		mlx_pixel_put(ft_get_global("mlx"), ft_get_global("win"), random() % CANVAS_W, random() % CANVAS_W, random() % 0x1000000);
+	mlx_put_image_to_window(ft_get_global("mlx"), ft_get_global("win"), i.img, 0, 0);
+}
+
+void	render_2dmap(t_pixel)
+
+void	render_model()
+{
+	t_pixel *2dmap[CANVAS_H][CANVAS_W];
+	2dmap = (t_pixel *[CANVAS_H][CANVAS_W])model2lines();
+	render_2dmap(map);
+}
+
+t_model *read_model()
+{
+	return NULL;
+}
+
 int main()
 {
 	PRINT("Start:\n");
 	PRINT(" - canvas(x: %d, y: %d)\n", CANVAS_W, CANVAS_H);
-	ft_set_global("mlx", mlx_init());
-	ft_set_global("win", mlx_new_window(ft_get_global("mlx"), CANVAS_W, CANVAS_H, "fdf"));
-/*
+	//init_mlx();
 	ft_set_global("model", read_model("test"));
-	t_coord *a = angle_new();
-	t_pixel ***d = model2pixel(a);
-	void *img = draw_lines(d);
-	render_img(img);
-	mlx_loop(ft_get_global("mlx"));
-*/
-	t_image i;
+	render();
+/*
 	i.img = mlx_new_image(ft_get_global("mlx"), CANVAS_W, CANVAS_H);
 	i.addr = mlx_get_data_addr(i.img, &i.bpp, &i.lsize, &i.endian);
-/*
-	t_pixel px = {4, 4};
-	draw_pixel(&i, &px);
 */
+	t_pixel px = {4, 4, 0xffffffff};
+	draw_pixel(&i, &px);
 	//random_img(&i);
 	//draw_line(&i, pixel_new(0, 0, 0xffffffff), pixel_new(CANVAS_W-1, 300, 0xffffffff));
 	//draw_line(&i, pixel_new(0, 0, 0xffffffff), pixel_new(100, 10, 0xffffffff));
@@ -366,20 +358,9 @@ int cnt=0;
 	while(cnt++ < 100)
 	draw_random_line(&i);
 //*/
-	mlx_put_image_to_window(ft_get_global("mlx"), ft_get_global("win"), i.img, 0, 0);
 /*
-	int cnt;
-	while(cnt++ < 1000000)
-		mlx_pixel_put(ft_get_global("mlx"), ft_get_global("win"), random() % CANVAS_W, random() % CANVAS_W, random() % 0x1000000);
-	return 1;
 */
-	/*
-	set_global("mlx-wndw", get_global("mlx-cnct")
-	if (get_global("mlx-wndw") == NULL)
-		return;
-	*/
-	//mlx_string_put(p, w, 250, 250, 0x888888, "string test");
+	render();
 	mlx_loop(ft_get_global("mlx"));
-	return 1;
 }
 
