@@ -6,7 +6,7 @@
 /*   By: tkondo <tkondo@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/26 09:21:46 by tkondo            #+#    #+#             */
-/*   Updated: 2024/12/26 10:21:55 by tkondo           ###   ########.fr       */
+/*   Updated: 2024/12/26 22:51:25 by tkondo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,13 +61,13 @@ bool	parse_fdf(t_model *m, int fd, t_memory_manager *mm)
 				break ;
 			if (!ft_isdigits((const unsigned char *)cur[j]))
 				return (false);
-			m->p[i][j] = (t_point){atoi(cur[j]), m->p[i][j].color = 0xffffffff};
+			m->p[i][j] = (t_point){j, i, ft_atoi(cur[j]), m->p[i][j].color = 0xffffffff};
 		}
-		m->p[i++][j].color = 0x00000000;
 		line = get_next_line(fd);
+		i++;
 	}
-	while (j--)
-		m->p[i][j].color = 0x00000000;
+	m->x_len = i;
+	m->y_len = j;
 	return (true);
 }
 
@@ -89,12 +89,4 @@ t_model	*get_model(char *fname)
 	ft_mmfree(mm);
 	close(fd);
 	return (m);
-}
-
-int	main(int argc, char **argv)
-{
-	t_model	*m;
-
-	m = get_model(argv[1]);
-	ft_g_mmfree();
 }
