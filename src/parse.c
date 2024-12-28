@@ -6,13 +6,14 @@
 /*   By: tkondo <tkondo@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/26 09:21:46 by tkondo            #+#    #+#             */
-/*   Updated: 2024/12/27 00:31:09 by tkondo           ###   ########.fr       */
+/*   Updated: 2024/12/28 18:09:48 by tkondo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fdf.h"
 #include "ft_memory.h"
 #include "libft.h"
+#include "get_next_line.h"
 #include <fcntl.h>
 #include <stdbool.h>
 #include <stdlib.h>

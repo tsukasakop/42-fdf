@@ -15,7 +15,8 @@
 
 #include <math.h>
 
-#define PRINT(...) fprintf(stderr,__VA_ARGS__)
+//#define PRINT(...) fprintf(stderr,__VA_ARGS__)
+#define PRINT(...) ;
 typedef t_pixel*** t_2dmap;
 
 /*
@@ -119,7 +120,7 @@ int	draw_pixel(t_image *i, t_pixel *p)
 	if (c / i->bpp * 8 / CANVAS_W >= CANVAS_H)
 		return 0;
 
-	PRINT("Draw point(%d, %d)=%lu\n", p->x, p->y, c);
+	//PRINT("Draw point(%d, %d)=%lu\n", p->x, p->y, c);
 	printf("%d, %d\n",p->x, p->y);
 	// *(t_color *)(((char *)i->addr) + c) = p->color; 
 	return 1;
@@ -166,13 +167,13 @@ t_pixel *random_pixel()
 t_pixel *point2pixel(t_point *p)
 {
 	t_pixel *px;
-	int f[3][2] = {
-		{10, -20, 0},
-		{20, 10, 60}
+	int f[2][3] = {
+		{90, -110, -1},
+		{70, 107, -13}
 	};
 	px =  pixel_new(
 			p->x * f[0][0] + p->y * f[0][1] + p->z * f[0][2],
-			p->x * f[1][0] + p->y * f[1][0] + p->z * f[1][2],
+			p->x * f[1][0] + p->y * f[1][1] + p->z * f[1][2],
 			p->color);
 	return px;
 }
@@ -184,7 +185,7 @@ int draw_line(t_image *i, t_pixel *p0, t_pixel *p1)
 	t_pixel slope;
 	t_pixel error;
 
-	PRINT("Drawing line: (%d, %d) to (%d, %d)\n", p0->x, p0->y, p1->x, p1->y);
+	//PRINT("Drawing line: (%d, %d) to (%d, %d)\n", p0->x, p0->y, p1->x, p1->y);
 	cur = (t_pixel){p0->x, p0->y, p0->color};
 	delta = (t_pixel) {abs(p1->x - p0->x), abs(p1->y - p0->y), 0x0};
 	slope = (t_pixel) {(p0->x < p1->x) * 2 - 1, (p0->y < p1->y) * 2 - 1, 0x0};
@@ -217,7 +218,6 @@ int draw_random_line(t_image *i)
 {
 	return draw_line(i, random_pixel(), random_pixel());
 }
-
 
 size_t	get_max_y(t_pixel ***m)
 {
@@ -371,16 +371,16 @@ void	scale_pixel(t_pixel *px, double x, double y)
 
 void	move_pixel(t_pixel *px, int x, int y)
 {
-	px->x -= x;
-	px->y -= y;
+	px->x += x;
+	px->y += y;
 }
 
 void	norm_pixel(t_pixel *px)
 {
 	t_norm *n;
 	n = (t_norm *)ft_get_global("norm");
-	move_pixel(px, n->move[0], n->move[1]); 
 	scale_pixel(px, n->scale[0], n->scale[1]); 
+	move_pixel(px, n->move[0], n->move[1]); 
 }
 
 void	norm_2dmap(t_pixel ***map)
@@ -389,10 +389,14 @@ void	norm_2dmap(t_pixel ***map)
 	n = (t_norm){{INT_MIN, INT_MIN}, {INT_MAX, INT_MAX}, {0.0, 0.0}, {0, 0}};
 	ft_set_global("norm", &n);
 	map_iter(map, search_limit);
-	n.scale[0] = (double)CANVAS_H / n.max[0] - n.min[0];
-	n.scale[1] = (double)CANVAS_H / n.max[1] - n.min[1];
-	n.move[0] = n.min[0];
-	n.move[1] = n.min[1];
+	n.scale[0] = (double)CANVAS_W / (n.max[0] - n.min[0]);
+	n.scale[1] = (double)CANVAS_H / (n.max[1] - n.min[1]);
+	if (n.scale[0] < n.scale[1])
+		n.scale[1] = n.scale[0];
+	else
+		n.scale[0] = n.scale[1];
+	n.move[0] = round(n.scale[0] * (CANVAS_W - n.min[0] * 3 + n.max[0]) / 2);
+	n.move[1] = round(n.scale[1] * (CANVAS_H - n.min[1] * 3 + n.max[1]) / 2);
 	map_iter(map, norm_pixel);
 }
 
@@ -405,7 +409,7 @@ void *model2image(void *mlx, t_model *m)
 	//i.img = mlx_new_image(mlx, CANVAS_W, CANVAS_H);
 	//i.addr = mlx_get_data_addr(i.img, &i.bpp, &i.lsize, &i.endian);
 	map = model_to_2dmap(m);
-	//norm_2dmap(map);
+	norm_2dmap(map);
 	draw_wire(&i, map);
 	return i.img;
 }
@@ -432,4 +436,5 @@ int main(int argc, char **argv)
 	//mlx_loop(ft_get_global("mlx"));
 	(void)win;
 	(void)img;
+	ft_g_mmfree();
 }
