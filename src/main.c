@@ -9,14 +9,13 @@
 #include <unistd.h>
 #include "ft_global.h"
 #include "fdf.h"
+#include "mlx.h"
 #include <stdint.h>
 #include <stddef.h>
 #include <limits.h>
 
 #include <math.h>
 
-//#define PRINT(...) fprintf(stderr,__VA_ARGS__)
-#define PRINT(...) ;
 typedef t_pixel*** t_2dmap;
 
 /*
@@ -121,8 +120,8 @@ int	draw_pixel(t_image *i, t_pixel *p)
 		return 0;
 
 	//PRINT("Draw point(%d, %d)=%lu\n", p->x, p->y, c);
-	printf("%d, %d\n",p->x, p->y);
-	// *(t_color *)(((char *)i->addr) + c) = p->color; 
+	//printf("%d, %d\n",p->x, p->y);
+	*(t_color *)(((char *)i->addr) + c) = p->color; 
 	return 1;
 }
 
@@ -389,8 +388,8 @@ void	norm_2dmap(t_pixel ***map)
 	n = (t_norm){{INT_MIN, INT_MIN}, {INT_MAX, INT_MAX}, {0.0, 0.0}, {0, 0}};
 	ft_set_global("norm", &n);
 	map_iter(map, search_limit);
-	n.scale[0] = (double)CANVAS_W / (n.max[0] - n.min[0]);
-	n.scale[1] = (double)CANVAS_H / (n.max[1] - n.min[1]);
+	n.scale[0] = (double)(CANVAS_W - 1) / (n.max[0] - n.min[0]);
+	n.scale[1] = (double)(CANVAS_H - 1) / (n.max[1] - n.min[1]);
 	if (n.scale[0] < n.scale[1])
 		n.scale[1] = n.scale[0];
 	else
@@ -406,8 +405,8 @@ void *model2image(void *mlx, t_model *m)
 	t_2dmap map;
 
 	(void)mlx;
-	//i.img = mlx_new_image(mlx, CANVAS_W, CANVAS_H);
-	//i.addr = mlx_get_data_addr(i.img, &i.bpp, &i.lsize, &i.endian);
+	i.img = mlx_new_image(mlx, CANVAS_W, CANVAS_H);
+	i.addr = mlx_get_data_addr(i.img, &i.bpp, &i.lsize, &i.endian);
 	map = model_to_2dmap(m);
 	norm_2dmap(map);
 	draw_wire(&i, map);
@@ -425,15 +424,15 @@ int main(int argc, char **argv)
 	PRINT(" - canvas(width: %d, height: %d)\n", CANVAS_W, CANVAS_H);
 	if(argc !=2)
 		return 1;
-	//mlx = mlx_init();
+	mlx = mlx_init();
 	mlx = NULL;
 	mdl = get_model(argv[1]);
 	if(mdl == NULL)
 		return 1;
 	img = model2image(mlx, mdl);
-	//win = mlx_new_window(mlx, CANVAS_W, CANVAS_H);
-	//mlx_put_image_to_window(mlx, win, img, 0, 0);
-	//mlx_loop(ft_get_global("mlx"));
+	win = mlx_new_window(mlx, CANVAS_W, CANVAS_H, "fdf");
+	mlx_put_image_to_window(mlx, win, img, 0, 0);
+	mlx_loop(ft_get_global("mlx"));
 	(void)win;
 	(void)img;
 	ft_g_mmfree();

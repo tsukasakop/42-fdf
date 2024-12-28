@@ -6,7 +6,7 @@
 #    By: tkondo <tkondo@student.42tokyo.jp>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/05/09 00:35:59 by tkondo            #+#    #+#              #
-#    Updated: 2024/12/28 19:35:55 by tkondo           ###   ########.fr        #
+#    Updated: 2024/12/29 00:23:22 by tkondo           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,6 +25,7 @@ CANVAS_H = $(shell expr $$(xdpyinfo | awk '/dimensions/{print $$2}' | awk -Fx '{
 TARGET =\
 	main\
 	parse\
+	hook\
 
 OBJS = $(addprefix $(OBJ_DIR)/,$(addsuffix .o,$(TARGET)))
 

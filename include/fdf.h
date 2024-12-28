@@ -6,9 +6,16 @@
 /*   By: tkondo <tkondo@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/26 10:22:23 by tkondo            #+#    #+#             */
-/*   Updated: 2024/12/27 01:38:13 by tkondo           ###   ########.fr       */
+/*   Updated: 2024/12/29 00:38:27 by tkondo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#ifdef DEBUG
+# include <stdio.h>
+# define PRINT(...) fprintf(stderr, __VA_ARGS__)
+#else
+# define PRINT(...) ;
+#endif
 
 #ifndef FDF_H
 # define FDF_H
@@ -21,7 +28,7 @@
 # endif
 
 # include <stdint.h>
-#include <stddef.h>
+# include <stddef.h>
 
 typedef uint64_t		t_color;
 typedef struct s_model	t_model;
@@ -76,6 +83,10 @@ struct					s_angle
 {
 };
 t_model	*get_model(char *fname);
+
+int key_hook_esc(int keycode);
+int btn_hook_cross();
+void add_hooks(void *win);
 /*
 model					read_model(file);
 camera					camera_new(void);
