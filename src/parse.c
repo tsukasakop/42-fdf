@@ -6,14 +6,15 @@
 /*   By: tkondo <tkondo@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/26 09:21:46 by tkondo            #+#    #+#             */
-/*   Updated: 2024/12/28 18:09:48 by tkondo           ###   ########.fr       */
+/*   Updated: 2024/12/29 11:09:18 by tkondo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fdf.h"
-#include "ft_memory.h"
-#include "libft.h"
-#include "get_next_line.h"
+#include <ft_stdlib.h>
+#include <ft_memory.h>
+#include <libft.h>
+#include <get_next_line.h>
 #include <fcntl.h>
 #include <stdbool.h>
 #include <stdlib.h>
@@ -43,6 +44,15 @@ char	**mm_split(t_memory_manager *mm, char *s, char c)
 	return (p);
 }
 
+char	*mm_gnl(t_memory_manager *mm, int fd)
+{
+	char *line;
+	line = get_next_line(fd);
+	if(line)
+		ft_mmadd(mm, line);
+	return line;
+}
+
 bool	parse_fdf(t_model *m, int fd, t_memory_manager *mm)
 {
 	int		i;
@@ -50,12 +60,13 @@ bool	parse_fdf(t_model *m, int fd, t_memory_manager *mm)
 	char	*line;
 	char	**cur;
 
-	line = get_next_line(fd);
+	line = mm_gnl(mm, fd);
 	i = 0;
 	while (line)
 	{
 		j = -1;
 		cur = mm_split(mm, line, ' ');
+		PRINT("%s", line);
 		while (cur[++j] != NULL)
 		{
 			if (cur[j][0] == '\n')
@@ -64,7 +75,7 @@ bool	parse_fdf(t_model *m, int fd, t_memory_manager *mm)
 				return (false);
 			m->p[i][j] = (t_point){j, i, ft_atoi(cur[j]), 0xffffffff};
 		}
-		line = get_next_line(fd);
+		line = mm_gnl(mm, fd);
 		i++;
 	}
 	m->x_len = j;
@@ -86,7 +97,7 @@ t_model	*get_model(char *fname)
 	m = (t_model *)ft_g_mmmalloc(sizeof(t_model));
 	mm = ft_mmnew();
 	if (!parse_fdf(m, fd, mm))
-		return (NULL);
+		m = NULL;
 	ft_mmfree(mm);
 	close(fd);
 	return (m);
