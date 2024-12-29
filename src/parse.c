@@ -6,16 +6,16 @@
 /*   By: tkondo <tkondo@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/26 09:21:46 by tkondo            #+#    #+#             */
-/*   Updated: 2024/12/29 11:09:18 by tkondo           ###   ########.fr       */
+/*   Updated: 2024/12/29 16:41:31 by tkondo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "fdf.h"
-#include <ft_stdlib.h>
-#include <ft_memory.h>
-#include <libft.h>
-#include <get_next_line.h>
 #include <fcntl.h>
+#include <ft_memory.h>
+#include <ft_stdlib.h>
+#include <get_next_line.h>
+#include <libft.h>
 #include <stdbool.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -46,11 +46,12 @@ char	**mm_split(t_memory_manager *mm, char *s, char c)
 
 char	*mm_gnl(t_memory_manager *mm, int fd)
 {
-	char *line;
+	char	*line;
+
 	line = get_next_line(fd);
-	if(line)
+	if (line)
 		ft_mmadd(mm, line);
-	return line;
+	return (line);
 }
 
 bool	parse_fdf(t_model *m, int fd, t_memory_manager *mm)
@@ -66,7 +67,6 @@ bool	parse_fdf(t_model *m, int fd, t_memory_manager *mm)
 	{
 		j = -1;
 		cur = mm_split(mm, line, ' ');
-		PRINT("%s", line);
 		while (cur[++j] != NULL)
 		{
 			if (cur[j][0] == '\n')
