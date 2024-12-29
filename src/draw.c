@@ -6,7 +6,7 @@
 /*   By: tkondo <tkondo@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/29 16:29:00 by tkondo            #+#    #+#             */
-/*   Updated: 2024/12/29 16:37:46 by tkondo           ###   ########.fr       */
+/*   Updated: 2024/12/29 16:44:36 by tkondo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,6 @@ int	draw_pixel(t_image *i, t_pixel *p)
 	c = (size_t)p->y * i->lsize + (size_t)p->x * (i->bpp / 8);
 	if (p->x < 0 || p->y < 0 || p->x >= CANVAS_W || p->y >= CANVAS_H)
 		return (0);
-	PRINT("Draw point(%d, %d) = %#lx\n", p->x, p->y, c);
 	*(t_color *)(((char *)i->addr) + c) = p->color;
 	return (1);
 }
