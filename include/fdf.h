@@ -6,7 +6,7 @@
 /*   By: tkondo <tkondo@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/26 10:22:23 by tkondo            #+#    #+#             */
-/*   Updated: 2024/12/29 00:38:27 by tkondo           ###   ########.fr       */
+/*   Updated: 2024/12/29 12:46:05 by tkondo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,12 +30,39 @@
 # include <stdint.h>
 # include <stddef.h>
 
+#include <mlx.h>
+#include <X11/keysym.h>
+#include <X11/X.h>
+#include <ft_stdlib.h>
+#include <stdlib.h>
+#include <math.h>
+#include <stdlib.h>
+#include <stdio.h>
+#include <unistd.h>
+#include "ft_global.h"
+#include "mlx.h"
+#include <stdint.h>
+#include <stddef.h>
+#include <limits.h>
+#include <ft_stdlib.h>
+#include <math.h>
+#include <ft_stdlib.h>
+#include <ft_memory.h>
+#include <libft.h>
+#include <get_next_line.h>
+#include <fcntl.h>
+#include <stdbool.h>
+#include <stdlib.h>
+#include <unistd.h>
+
+
 typedef uint64_t		t_color;
 typedef struct s_model	t_model;
 typedef struct s_point	t_point;
 typedef struct s_image	t_image;
 typedef struct s_pixel	t_pixel;
 
+typedef t_pixel*** t_map;
 typedef struct s_norm	t_norm;
 
 struct s_norm{
@@ -87,6 +114,38 @@ t_model	*get_model(char *fname);
 int key_hook_esc(int keycode);
 int btn_hook_cross();
 void add_hooks(void *win);
+t_pixel *point2pixel(t_point *p);
+t_pixel	***model2map(t_model	*mdl);
+void *model2image(void *mlx, t_model *m);
+int	draw_pixel(t_image *i, t_pixel *p);
+int draw_line(t_image *i, t_pixel *p0, t_pixel *p1);
+void    draw_wire(t_image *i, t_map map);
+int key_hook_esc(int keycode);
+int btn_hook_cross();
+void add_hooks(void *win);
+void error(const char *s);
+int main(int argc, char **argv);
+size_t	get_max_y(t_pixel ***m);
+size_t	get_max_x(t_pixel ***m);
+void	set_pixel(t_pixel ***m, size_t x, size_t y, t_pixel *px);
+t_pixel	***_map_new(size_t x, size_t y);
+void    map_iter(t_pixel ***map, void(*f)(t_pixel *));
+size_t max_y(t_model *mdl);
+size_t max_x(t_model *mdl);
+t_point *get_point(t_model *m, size_t x, size_t y);
+void	search_limit(t_pixel *px);
+void	norm_pixel(t_pixel *px);
+void	norm_map(t_pixel ***map);
+int	ft_isdigits(const unsigned char *s);
+char	**mm_split(t_memory_manager *mm, char *s, char c);
+char	*mm_gnl(t_memory_manager *mm, int fd);
+bool	parse_fdf(t_model *m, int fd, t_memory_manager *mm);
+t_model	*get_model(char *fname);
+t_pixel *pixel_new(int x, int y, uint64_t color);
+t_pixel	*get_pixel(t_pixel ***m, size_t x, size_t y);
+void	scale_pixel(t_pixel *px, double x, double y);
+void	move_pixel(t_pixel *px, int x, int y);
+
 /*
 model					read_model(file);
 camera					camera_new(void);

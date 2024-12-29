@@ -6,7 +6,7 @@
 #    By: tkondo <tkondo@student.42tokyo.jp>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/05/09 00:35:59 by tkondo            #+#    #+#              #
-#    Updated: 2024/12/29 10:59:48 by tkondo           ###   ########.fr        #
+#    Updated: 2024/12/29 12:42:27 by tkondo           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -24,9 +24,15 @@ NAME = fdf
 CANVAS_W = $(shell expr $$(xdpyinfo | awk '/dimensions/{print $$2}' | awk -Fx '{print $$1}') / 2)
 CANVAS_H = $(shell expr $$(xdpyinfo | awk '/dimensions/{print $$2}' | awk -Fx '{print $$2}') / 2)
 TARGET =\
-	main\
-	parse\
+	convert\
+	draw\
 	hook\
+	main\
+	map\
+	model\
+	norm\
+	parse\
+	pixel\
 
 OBJS = $(addprefix $(OBJ_DIR)/,$(addsuffix .o,$(TARGET)))
 
