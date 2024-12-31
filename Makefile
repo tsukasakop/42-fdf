@@ -6,7 +6,7 @@
 #    By: tkondo <tkondo@student.42tokyo.jp>         +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/05/09 00:35:59 by tkondo            #+#    #+#              #
-#    Updated: 2024/12/29 12:42:27 by tkondo           ###   ########.fr        #
+#    Updated: 2024/12/31 13:11:35 by tkondo           ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -57,6 +57,8 @@ libmlx/libmlx.a:
 
 clean:
 	rm -f $(OBJS)
+	@make -C libft fclean
+	@make -C libmlx clean
 
 fclean: clean
 	rm -f $(NAME)

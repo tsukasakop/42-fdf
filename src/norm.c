@@ -6,7 +6,7 @@
 /*   By: tkondo <tkondo@student.42tokyo.jp>         +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/29 16:23:30 by tkondo            #+#    #+#             */
-/*   Updated: 2024/12/29 16:23:32 by tkondo           ###   ########.fr       */
+/*   Updated: 2024/12/31 12:56:51 by tkondo           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,4 +53,5 @@ void	norm_map(t_pixel ***map)
 	n.move[0] = round(n.scale[0] * -0.5 * (n.max[0] + n.min[0])) + CANVAS_W / 2;
 	n.move[1] = round(n.scale[1] * -0.5 * (n.max[1] + n.min[1])) + CANVAS_H / 2;
 	map_iter(map, norm_pixel);
+	ft_delone_global("norm", NULL);
 }
